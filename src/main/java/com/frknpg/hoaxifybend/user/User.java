@@ -1,17 +1,23 @@
 package com.frknpg.hoaxifybend.user;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.frknpg.hoaxifybend.shared.Views;
 import lombok.Data;
-import javax.persistence.Column;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.Collection;
 
 @Data
 @Entity
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue
@@ -20,15 +26,45 @@ public class User {
     @NotNull(message = "{hoaxify.constraints.username.NotNull.message}")
     @Size(min = 4, max = 255)
     @UniqueUsername
+    @JsonView(value = Views.Base.class)
     private String username;
 
     @NotNull
     @Size(min = 4, max = 255)
+    @JsonView(value = Views.Base.class)
     private String displayName;
 
     @NotNull
     @Size(min = 8, max = 255)
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$", message = "{hoaxify.constraints.password.Pattern.message}")
+    @JsonView(value = Views.Sensitive.class)
     private String password;
 
+    @JsonView(value = Views.Base.class)
+    private String image;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return AuthorityUtils.createAuthorityList("Role_user");
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
