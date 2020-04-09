@@ -1,6 +1,7 @@
 package com.frknpg.hoaxifybend.user;
 
 import com.frknpg.hoaxifybend.shared.GenericResponse;
+import com.frknpg.hoaxifybend.user.vm.UserVM;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +29,8 @@ public class UserController {
     }
 
     @GetMapping("/api/1.0/users")
-    Page<UserProjection> getUsers(Pageable page) {
-        return userService.getUsers(page);
+    Page<UserVM> getUsers(Pageable page) {
+        return userService.getUsers(page).map(UserVM::new);
     }
 
     //ERROR HANDLER KULLANDIIGMIZ ICIN GEREK KALMADI

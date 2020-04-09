@@ -26,7 +26,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public Page<UserProjection> getUsers(Pageable page) {
-        return userRepository.getAllUsersProjection(page);
+    public Page<User> getUsers(Pageable page) {
+        return userRepository.findAll(page);
     }
 }

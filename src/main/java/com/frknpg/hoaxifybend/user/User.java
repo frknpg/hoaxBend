@@ -1,7 +1,6 @@
 package com.frknpg.hoaxifybend.user;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.frknpg.hoaxifybend.shared.Views;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -26,21 +25,17 @@ public class User implements UserDetails {
     @NotNull(message = "{hoaxify.constraints.username.NotNull.message}")
     @Size(min = 4, max = 255)
     @UniqueUsername
-    @JsonView(value = Views.Base.class)
     private String username;
 
     @NotNull
     @Size(min = 4, max = 255)
-    @JsonView(value = Views.Base.class)
     private String displayName;
 
     @NotNull
     @Size(min = 8, max = 255)
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$", message = "{hoaxify.constraints.password.Pattern.message}")
-    @JsonView(value = Views.Sensitive.class)
     private String password;
 
-    @JsonView(value = Views.Base.class)
     private String image;
 
     @Override
