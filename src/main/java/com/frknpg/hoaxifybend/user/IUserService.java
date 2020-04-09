@@ -7,5 +7,5 @@ public interface IUserService {
 
     public void save(User user);
 
-    public Page<User> getUsers(Pageable page);
+    public Page<UserProjection> getUsers(Pageable page);
 }
