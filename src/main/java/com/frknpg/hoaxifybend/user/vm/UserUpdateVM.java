@@ -4,17 +4,11 @@ import com.frknpg.hoaxifybend.user.User;
 import lombok.Data;
 
 @Data
-public class UserVM {
-
-    private String username;
+public class UserUpdateVM {
 
     private String displayName;
 
-    private String image;
-
-    public UserVM(User user) {
-        setUsername(user.getUsername());
+    public UserUpdateVM(User user) {
         setDisplayName(user.getDisplayName());
-        setImage(user.getImage());
     }
 }

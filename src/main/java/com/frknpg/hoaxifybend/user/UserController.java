@@ -2,6 +2,7 @@ package com.frknpg.hoaxifybend.user;
 
 import com.frknpg.hoaxifybend.shared.CurrentUser;
 import com.frknpg.hoaxifybend.shared.GenericResponse;
+import com.frknpg.hoaxifybend.user.vm.UserUpdateVM;
 import com.frknpg.hoaxifybend.user.vm.UserVM;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,12 @@ public class UserController {
     @GetMapping("/users/{username}")
     UserVM getUser(@PathVariable String username) {
         User user = userService.getByUsername(username);
+        return new UserVM(user);
+    }
+
+    @PutMapping("/users/{username}")
+    UserVM updateUser(@PathVariable String username, @RequestBody UserUpdateVM updatedUser) {
+        User user = userService.updateUser(username, updatedUser);
         return new UserVM(user);
     }
 

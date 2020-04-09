@@ -1,6 +1,7 @@
 package com.frknpg.hoaxifybend.user;
 
 import com.frknpg.hoaxifybend.error.NotFoundException;
+import com.frknpg.hoaxifybend.user.vm.UserUpdateVM;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -41,5 +42,13 @@ public class UserService implements IUserService {
             throw new NotFoundException();
         }
         return inDb;
+    }
+
+    @Override
+    public User updateUser(String username, UserUpdateVM userUpdateVM) {
+        User inDb = getByUsername(username);
+        inDb.setDisplayName(userUpdateVM.getDisplayName());
+
+        return userRepository.save(inDb);
     }
 }
