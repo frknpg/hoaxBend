@@ -1,5 +1,6 @@
 package com.frknpg.hoaxifybend.user;
 
+import com.frknpg.hoaxifybend.error.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,7 +27,19 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public Page<User> getUsers(Pageable page) {
+    public Page<User> getUsers(Pageable page, User currentUser) {
+        if(currentUser != null) {
+            return userRepository.findByUsernameNot(currentUser.getUsername(), page);
+        }
         return userRepository.findAll(page);
+    }
+
+    @Override
+    public User getByUsername(String username) {
+        User inDb = userRepository.findByUsername(username);
+        if(inDb == null){
+            throw new NotFoundException();
+        }
+        return inDb;
     }
 }

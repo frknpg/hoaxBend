@@ -1,5 +1,6 @@
 package com.frknpg.hoaxifybend.user;
 
+import com.frknpg.hoaxifybend.shared.CurrentUser;
 import com.frknpg.hoaxifybend.shared.GenericResponse;
 import com.frknpg.hoaxifybend.user.vm.UserVM;
 import org.slf4j.Logger;
@@ -7,14 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 @RestController
+@RequestMapping("/api/1.0")
 public class UserController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
@@ -22,15 +21,21 @@ public class UserController {
     @Autowired
     IUserService userService;
 
-    @PostMapping("/api/1.0/users")
+    @PostMapping("/users")
     public GenericResponse createUser(@Valid @RequestBody User user) {
         userService.save(user);
         return new GenericResponse("User Create Success");
     }
 
-    @GetMapping("/api/1.0/users")
-    Page<UserVM> getUsers(Pageable page) {
-        return userService.getUsers(page).map(UserVM::new);
+    @GetMapping("/users")
+    Page<UserVM> getUsers(Pageable page, @CurrentUser User currentUser) {
+        return userService.getUsers(page, currentUser).map(UserVM::new);
+    }
+
+    @GetMapping("/users/{username}")
+    UserVM getUser(@PathVariable String username) {
+        User user = userService.getByUsername(username);
+        return new UserVM(user);
     }
 
     //ERROR HANDLER KULLANDIIGMIZ ICIN GEREK KALMADI
