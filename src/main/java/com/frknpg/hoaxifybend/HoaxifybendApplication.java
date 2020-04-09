@@ -22,7 +22,7 @@ public class HoaxifybendApplication {
 			for(int i = 1; i<=10; i++) {
 				User user = new User();
 				user.setUsername("user" + i);
-				user.setDisplayName("user" + i);
+				user.setDisplayName("display" + i);
 				user.setPassword("P4ssword");
 				userService.save(user);
 			}

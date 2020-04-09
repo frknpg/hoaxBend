@@ -8,7 +8,4 @@ public class UserUpdateVM {
 
     private String displayName;
 
-    public UserUpdateVM(User user) {
-        setDisplayName(user.getDisplayName());
-    }
 }
