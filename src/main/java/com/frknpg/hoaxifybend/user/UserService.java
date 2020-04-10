@@ -1,6 +1,7 @@
 package com.frknpg.hoaxifybend.user;
 
 import com.frknpg.hoaxifybend.error.NotFoundException;
+import com.frknpg.hoaxifybend.file.FileService;
 import com.frknpg.hoaxifybend.user.vm.UserUpdateVM;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,16 +9,20 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 @Service
 public class UserService implements IUserService {
 
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;
+    FileService fileService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, FileService fileService) {
 
         this.userRepository = userRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
+        this.fileService = fileService;
     }
 
     @Override
@@ -48,7 +53,15 @@ public class UserService implements IUserService {
     public User updateUser(String username, UserUpdateVM userUpdateVM) {
         User inDb = getByUsername(username);
         inDb.setDisplayName(userUpdateVM.getDisplayName());
-
+        if (userUpdateVM.getImage() != null) {
+            try {
+                String storedFileName = fileService.writeBase64EncodedStringToFile(userUpdateVM.getImage());
+                inDb.setImage(storedFileName);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         return userRepository.save(inDb);
     }
+
 }
