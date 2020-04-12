@@ -1,5 +1,7 @@
 package com.frknpg.hoaxifybend.file;
 
+import com.frknpg.hoaxifybend.configuration.AppConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -12,9 +14,12 @@ import java.util.UUID;
 @Service
 public class FileService {
 
+    @Autowired
+    AppConfiguration appConfiguration;
+
     public String writeBase64EncodedStringToFile(String image) throws IOException {
         String fileName = generateRandomName();
-        File target = new File("picture-storage/" + fileName);
+        File target = new File( appConfiguration.getUploadPath() + "/" + fileName);
         OutputStream outputStream = new FileOutputStream(target);
 
         byte[] base64encoded = Base64.getDecoder().decode(image);

@@ -6,6 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 
 @SpringBootApplication()
 public class HoaxifybendApplication {
@@ -15,8 +16,8 @@ public class HoaxifybendApplication {
 	}
 
 
-	// Uygulama basladiignda bir user olusturuyor
 	@Bean
+	@Profile("dev")
 	CommandLineRunner createInitialUser(IUserService userService) {
 		return args -> {
 			for(int i = 1; i<=10; i++) {
