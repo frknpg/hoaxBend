@@ -54,12 +54,14 @@ public class UserService implements IUserService {
         User inDb = getByUsername(username);
         inDb.setDisplayName(userUpdateVM.getDisplayName());
         if (userUpdateVM.getImage() != null) {
+            String oldImageName = inDb.getImage();
             try {
                 String storedFileName = fileService.writeBase64EncodedStringToFile(userUpdateVM.getImage());
                 inDb.setImage(storedFileName);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            fileService.deleteImage(oldImageName);
         }
         return userRepository.save(inDb);
     }
