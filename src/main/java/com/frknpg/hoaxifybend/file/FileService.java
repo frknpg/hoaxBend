@@ -1,7 +1,7 @@
 package com.frknpg.hoaxifybend.file;
 
 import com.frknpg.hoaxifybend.configuration.AppConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -16,12 +16,18 @@ import java.util.UUID;
 @Service
 public class FileService {
 
-    @Autowired
     AppConfiguration appConfiguration;
+    Tika tika;
+
+    public FileService(AppConfiguration appConfiguration) {
+        this.appConfiguration = appConfiguration;
+        this.tika = new Tika();
+    }
+
 
     public String writeBase64EncodedStringToFile(String image) throws IOException {
         String fileName = generateRandomName();
-        File target = new File( appConfiguration.getUploadPath() + "/" + fileName);
+        File target = new File(appConfiguration.getUploadPath() + "/" + fileName);
         OutputStream outputStream = new FileOutputStream(target);
 
         byte[] base64encoded = Base64.getDecoder().decode(image);
@@ -35,7 +41,7 @@ public class FileService {
     }
 
     public void deleteImage(String oldImageName) {
-        if(oldImageName == null){
+        if (oldImageName == null) {
             return;
         }
         try {
@@ -43,5 +49,10 @@ public class FileService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String detectType(String image) {
+        byte[] base64encoded = Base64.getDecoder().decode(image);
+        return tika.detect(base64encoded);
     }
 }
