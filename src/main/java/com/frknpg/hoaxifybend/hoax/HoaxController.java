@@ -2,10 +2,9 @@ package com.frknpg.hoaxifybend.hoax;
 
 import com.frknpg.hoaxifybend.shared.GenericResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -20,5 +19,10 @@ public class HoaxController {
     public GenericResponse saveHoax(@Valid @RequestBody Hoax hoax) {
         hoaxService.saveHoax(hoax);
         return new GenericResponse("Hoax is saved!");
+    }
+
+    @GetMapping("/hoaxes")
+    public Page<Hoax> getHoaxes(Pageable page) {
+        return hoaxService.getHoaxes(page);
     }
 }
