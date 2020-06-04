@@ -1,5 +1,7 @@
 package com.frknpg.hoaxifybend;
 
+import com.frknpg.hoaxifybend.hoax.Hoax;
+import com.frknpg.hoaxifybend.hoax.IHoaxService;
 import com.frknpg.hoaxifybend.user.IUserService;
 import com.frknpg.hoaxifybend.user.User;
 import org.springframework.boot.CommandLineRunner;
@@ -18,14 +20,19 @@ public class HoaxifybendApplication {
 
 	@Bean
 	@Profile("dev")
-	CommandLineRunner createInitialUser(IUserService userService) {
+	CommandLineRunner createInitialUser(IUserService userService, IHoaxService hoaxService) {
 		return args -> {
-			for(int i = 1; i<=10; i++) {
+			for (int i = 1; i <= 10; i++) {
 				User user = new User();
 				user.setUsername("user" + i);
 				user.setDisplayName("display" + i);
 				user.setPassword("P4ssword");
 				userService.save(user);
+			}
+			for (int i = 1; i <= 50; i++) {
+				Hoax hoax = new Hoax();
+				hoax.setContent("Hoax " + i);
+				hoaxService.saveHoax(hoax);
 			}
 		};
 	}
