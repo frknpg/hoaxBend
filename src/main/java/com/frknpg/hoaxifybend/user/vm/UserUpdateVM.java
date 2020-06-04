@@ -13,7 +13,7 @@ public class UserUpdateVM {
     @Size(min = 4, max = 255)
     private String displayName;
 
-    @CheckFileFormat
+    @CheckFileFormat(types = {"image/png", "image/jpeg"})
     private String image;
 
 }
