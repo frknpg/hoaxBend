@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -32,8 +31,18 @@ public class HoaxController {
         return hoaxService.getHoaxes(page).map(HoaxVM::new);
     }
 
+    @GetMapping("/hoaxes/{id:[0-9]+}")
+    public Page<HoaxVM> getHoaxesRelative(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable page, @PathVariable long id) {
+        return hoaxService.getOldHoaxes(id, page).map(HoaxVM::new);
+    }
+
     @GetMapping("/users/{username}/hoaxes")
     public Page<HoaxVM> getUserHoaxes(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable page, @PathVariable String username) {
         return hoaxService.getHoaxesOfUser(page, username).map(HoaxVM::new);
+    }
+
+    @GetMapping("/users/{username}/hoaxes/{id:[0-9]+}")
+    public Page<HoaxVM> getUserOldHoaxes(@PathVariable long id, @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable page, @PathVariable String username) {
+        return hoaxService.getOldHoaxesOfUser(id, page, username).map(HoaxVM::new);
     }
 }

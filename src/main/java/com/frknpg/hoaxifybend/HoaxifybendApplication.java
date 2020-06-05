@@ -28,7 +28,7 @@ public class HoaxifybendApplication {
 				user.setDisplayName("display" + i);
 				user.setPassword("P4ssword");
 				userService.save(user);
-				for (int j = 1; j <= 5; j++) {
+				for (int j = 1; j <= 15; j++) {
 					Hoax hoax = new Hoax();
 					hoax.setContent("Hoax - " + j + " from user " + i);
 					hoaxService.saveHoax(hoax, user);

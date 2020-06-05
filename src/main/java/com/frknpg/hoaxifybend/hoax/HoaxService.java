@@ -1,8 +1,6 @@
 package com.frknpg.hoaxifybend.hoax;
 
-import com.frknpg.hoaxifybend.error.NotFoundException;
 import com.frknpg.hoaxifybend.user.User;
-import com.frknpg.hoaxifybend.user.UserRepository;
 import com.frknpg.hoaxifybend.user.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,5 +32,16 @@ public class HoaxService implements IHoaxService {
     public Page<Hoax> getHoaxesOfUser(Pageable page, String username) {
         User inDb = userService.getByUsername(username);
         return hoaxRepository.findByUser(inDb, page);
+    }
+
+    @Override
+    public Page<Hoax> getOldHoaxes(long id, Pageable page) {
+        return hoaxRepository.findByIdLessThan(id, page);
+    }
+
+    @Override
+    public Page<Hoax> getOldHoaxesOfUser(long id, Pageable page, String username) {
+        User inDb = userService.getByUsername(username);
+        return hoaxRepository.findByIdLessThanAndUser(id, inDb, page);
     }
 }
