@@ -9,9 +9,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/1.0")
@@ -32,8 +35,16 @@ public class HoaxController {
     }
 
     @GetMapping("/hoaxes/{id:[0-9]+}")
-    public Page<HoaxVM> getHoaxesRelative(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable page, @PathVariable long id) {
-        return hoaxService.getOldHoaxes(id, page).map(HoaxVM::new);
+    public ResponseEntity<?> getHoaxesRelative(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable page,
+                                               @PathVariable long id,
+                                               @RequestParam(name = "count", required = false, defaultValue = "false") boolean count) {
+        if (count) {
+            long newHoaxCount = hoaxService.getNewHoaxesCount(id);
+            Map<String, Long> response = new HashMap<>();
+            response.put("count", newHoaxCount);
+            return ResponseEntity.ok(response);
+        }
+        return ResponseEntity.ok(hoaxService.getOldHoaxes(id, page).map(HoaxVM::new));
     }
 
     @GetMapping("/users/{username}/hoaxes")
@@ -42,7 +53,16 @@ public class HoaxController {
     }
 
     @GetMapping("/users/{username}/hoaxes/{id:[0-9]+}")
-    public Page<HoaxVM> getUserOldHoaxes(@PathVariable long id, @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable page, @PathVariable String username) {
-        return hoaxService.getOldHoaxesOfUser(id, page, username).map(HoaxVM::new);
+    public ResponseEntity<?> getUserHoaxesRelative(@PathVariable long id,
+                                                   @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable page,
+                                                   @PathVariable String username,
+                                                   @RequestParam(name = "count", required = false, defaultValue = "false") boolean count) {
+        if (count) {
+            long newHoaxCount = hoaxService.getUserNewHoaxesCount(id, username);
+            Map<String, Long> response = new HashMap<>();
+            response.put("count", newHoaxCount);
+            return ResponseEntity.ok(response);
+        }
+        return ResponseEntity.ok(hoaxService.getOldHoaxesOfUser(id, page, username).map(HoaxVM::new));
     }
 }

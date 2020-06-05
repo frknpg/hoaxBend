@@ -44,4 +44,15 @@ public class HoaxService implements IHoaxService {
         User inDb = userService.getByUsername(username);
         return hoaxRepository.findByIdLessThanAndUser(id, inDb, page);
     }
+
+    @Override
+    public long getNewHoaxesCount(long id) {
+        return hoaxRepository.countByIdGreaterThan(id);
+    }
+
+    @Override
+    public long getUserNewHoaxesCount(long id, String username) {
+        User inDb = userService.getByUsername(username);
+        return hoaxRepository.countByIdGreaterThanAndUser(id, inDb);
+    }
 }

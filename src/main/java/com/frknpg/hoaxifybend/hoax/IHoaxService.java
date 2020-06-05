@@ -16,4 +16,7 @@ public interface IHoaxService {
 
     Page<Hoax> getOldHoaxesOfUser(long id, Pageable page, String username);
 
+    long getNewHoaxesCount(long id);
+
+    long getUserNewHoaxesCount(long id, String username);
 }
