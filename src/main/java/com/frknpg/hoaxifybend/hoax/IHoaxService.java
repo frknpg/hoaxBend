@@ -1,8 +1,13 @@
 package com.frknpg.hoaxifybend.hoax;
 
+import com.frknpg.hoaxifybend.hoax.vm.HoaxVM;
 import com.frknpg.hoaxifybend.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
+import java.util.Collection;
+import java.util.List;
 
 public interface IHoaxService {
 
@@ -19,4 +24,8 @@ public interface IHoaxService {
     long getNewHoaxesCount(long id);
 
     long getUserNewHoaxesCount(long id, String username);
+
+    List<Hoax> getNewHoaxes(long id, Sort sort);
+
+    List<Hoax> getUserNewHoaxes(long id, Sort sort, String username);
 }

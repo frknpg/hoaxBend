@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/1.0")
@@ -37,13 +39,20 @@ public class HoaxController {
     @GetMapping("/hoaxes/{id:[0-9]+}")
     public ResponseEntity<?> getHoaxesRelative(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable page,
                                                @PathVariable long id,
-                                               @RequestParam(name = "count", required = false, defaultValue = "false") boolean count) {
+                                               @RequestParam(name = "count", required = false, defaultValue = "false") boolean count,
+                                               @RequestParam(name = "direction", defaultValue = "before") String direction) {
         if (count) {
             long newHoaxCount = hoaxService.getNewHoaxesCount(id);
             Map<String, Long> response = new HashMap<>();
             response.put("count", newHoaxCount);
             return ResponseEntity.ok(response);
         }
+        if(direction.equals("after")) {
+            List<HoaxVM> newHoaxes = hoaxService.getNewHoaxes(id, page.getSort())
+                    .stream().map(HoaxVM::new).collect(Collectors.toList());
+            return ResponseEntity.ok(newHoaxes);
+        }
+
         return ResponseEntity.ok(hoaxService.getOldHoaxes(id, page).map(HoaxVM::new));
     }
 
@@ -56,13 +65,20 @@ public class HoaxController {
     public ResponseEntity<?> getUserHoaxesRelative(@PathVariable long id,
                                                    @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable page,
                                                    @PathVariable String username,
-                                                   @RequestParam(name = "count", required = false, defaultValue = "false") boolean count) {
+                                                   @RequestParam(name = "count", required = false, defaultValue = "false") boolean count,
+                                                   @RequestParam(name = "direction", defaultValue = "before") String direction) {
         if (count) {
             long newHoaxCount = hoaxService.getUserNewHoaxesCount(id, username);
             Map<String, Long> response = new HashMap<>();
             response.put("count", newHoaxCount);
             return ResponseEntity.ok(response);
         }
+        if(direction.equals("after")) {
+            List<HoaxVM> newHoaxes = hoaxService.getUserNewHoaxes(id, page.getSort(), username)
+                    .stream().map(HoaxVM::new).collect(Collectors.toList());
+            return ResponseEntity.ok(newHoaxes);
+        }
+
         return ResponseEntity.ok(hoaxService.getOldHoaxesOfUser(id, page, username).map(HoaxVM::new));
     }
 }

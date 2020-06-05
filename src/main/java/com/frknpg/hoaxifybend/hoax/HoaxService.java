@@ -1,10 +1,14 @@
 package com.frknpg.hoaxifybend.hoax;
 
+import com.frknpg.hoaxifybend.hoax.vm.HoaxVM;
 import com.frknpg.hoaxifybend.user.User;
 import com.frknpg.hoaxifybend.user.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class HoaxService implements IHoaxService {
@@ -54,5 +58,16 @@ public class HoaxService implements IHoaxService {
     public long getUserNewHoaxesCount(long id, String username) {
         User inDb = userService.getByUsername(username);
         return hoaxRepository.countByIdGreaterThanAndUser(id, inDb);
+    }
+
+    @Override
+    public List<Hoax> getNewHoaxes(long id, Sort sort) {
+        return hoaxRepository.findByIdGreaterThan(id, sort);
+    }
+
+    @Override
+    public List<Hoax> getUserNewHoaxes(long id, Sort sort, String username) {
+        User inDb = userService.getByUsername(username);
+        return hoaxRepository.findByIdGreaterThanAndUser(id, sort, inDb);
     }
 }
