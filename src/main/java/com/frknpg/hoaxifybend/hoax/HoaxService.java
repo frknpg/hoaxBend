@@ -1,11 +1,11 @@
 package com.frknpg.hoaxifybend.hoax;
 
-import com.frknpg.hoaxifybend.hoax.vm.HoaxVM;
 import com.frknpg.hoaxifybend.user.User;
 import com.frknpg.hoaxifybend.user.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,35 +39,45 @@ public class HoaxService implements IHoaxService {
     }
 
     @Override
-    public Page<Hoax> getOldHoaxes(long id, Pageable page) {
-        return hoaxRepository.findByIdLessThan(id, page);
+    public Page<Hoax> getOldHoaxes(long id, String username, Pageable page) {
+        Specification<Hoax> spec = idLessThan(id);
+        if (username != null) {
+            User inDb = userService.getByUsername(username);
+            spec = spec.and(userIs(inDb));
+        }
+        return hoaxRepository.findAll(spec, page);
     }
 
     @Override
-    public Page<Hoax> getOldHoaxesOfUser(long id, Pageable page, String username) {
-        User inDb = userService.getByUsername(username);
-        return hoaxRepository.findByIdLessThanAndUser(id, inDb, page);
+    public long getNewHoaxesCount(long id, String username) {
+        Specification<Hoax> spec = idGreaterThan(id);
+        if (username != null) {
+            User inDb = userService.getByUsername(username);
+            spec = spec.and(userIs(inDb));
+        }
+        return hoaxRepository.count(spec);
     }
 
     @Override
-    public long getNewHoaxesCount(long id) {
-        return hoaxRepository.countByIdGreaterThan(id);
+    public List<Hoax> getNewHoaxes(long id, String username, Sort sort) {
+        Specification<Hoax> spec = idGreaterThan(id);
+        if (username != null) {
+            User inDb = userService.getByUsername(username);
+            spec = spec.and(userIs(inDb));
+        }
+        return hoaxRepository.findAll(spec, sort);
     }
 
-    @Override
-    public long getUserNewHoaxesCount(long id, String username) {
-        User inDb = userService.getByUsername(username);
-        return hoaxRepository.countByIdGreaterThanAndUser(id, inDb);
+    Specification<Hoax> idLessThan(long id) {
+        return (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.lessThan(root.get("id"), id);
     }
 
-    @Override
-    public List<Hoax> getNewHoaxes(long id, Sort sort) {
-        return hoaxRepository.findByIdGreaterThan(id, sort);
+    Specification<Hoax> idGreaterThan(long id) {
+        return (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.greaterThan(root.get("id"), id);
     }
 
-    @Override
-    public List<Hoax> getUserNewHoaxes(long id, Sort sort, String username) {
-        User inDb = userService.getByUsername(username);
-        return hoaxRepository.findByIdGreaterThanAndUser(id, sort, inDb);
+    Specification<Hoax> userIs(User user) {
+        return (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.equal(root.get("user"), user);
     }
+
 }
