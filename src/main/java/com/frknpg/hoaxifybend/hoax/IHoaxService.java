@@ -22,4 +22,5 @@ public interface IHoaxService {
 
     List<Hoax> getNewHoaxes(long id, String username, Sort sort);
 
+    void delete(long id);
 }

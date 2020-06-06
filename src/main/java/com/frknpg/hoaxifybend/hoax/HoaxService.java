@@ -2,6 +2,7 @@ package com.frknpg.hoaxifybend.hoax;
 
 import com.frknpg.hoaxifybend.file.FileAttachment;
 import com.frknpg.hoaxifybend.file.FileAttachmentRepository;
+import com.frknpg.hoaxifybend.file.FileService;
 import com.frknpg.hoaxifybend.hoax.vm.HoaxSubmitVM;
 import com.frknpg.hoaxifybend.user.User;
 import com.frknpg.hoaxifybend.user.UserService;
@@ -20,12 +21,15 @@ public class HoaxService implements IHoaxService {
     HoaxRepository hoaxRepository;
     UserService userService;
     FileAttachmentRepository fileAttachmentRepository;
+    FileService fileService;
 
     public HoaxService(HoaxRepository hoaxRepository, UserService userService,
-                       FileAttachmentRepository fileAttachmentRepository) {
+                       FileAttachmentRepository fileAttachmentRepository,
+                       FileService fileService) {
         this.hoaxRepository = hoaxRepository;
         this.userService = userService;
         this.fileAttachmentRepository = fileAttachmentRepository;
+        this.fileService = fileService;
     }
 
     @Override
@@ -82,6 +86,16 @@ public class HoaxService implements IHoaxService {
             spec = spec.and(userIs(inDb));
         }
         return hoaxRepository.findAll(spec, sort);
+    }
+
+    @Override
+    public void delete(long id) {
+        Hoax inDb = hoaxRepository.getOne(id);
+        if (inDb.getFileAttachment() != null) {
+            String fileName = inDb.getFileAttachment().getName();
+            fileService.deleteAttachmentImage(fileName);
+        }
+        hoaxRepository.deleteById(id);
     }
 
     Specification<Hoax> idLessThan(long id) {
