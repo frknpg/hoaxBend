@@ -3,6 +3,7 @@ package com.frknpg.hoaxifybend.file;
 import com.frknpg.hoaxifybend.configuration.AppConfiguration;
 import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,10 +19,12 @@ public class FileService {
 
     AppConfiguration appConfiguration;
     Tika tika;
+    FileAttachmentRepository fileAttachmentRepository;
 
-    public FileService(AppConfiguration appConfiguration) {
+    public FileService(AppConfiguration appConfiguration, FileAttachmentRepository fileAttachmentRepository) {
         this.appConfiguration = appConfiguration;
         this.tika = new Tika();
+        this.fileAttachmentRepository = fileAttachmentRepository;
     }
 
 
@@ -33,6 +36,7 @@ public class FileService {
         byte[] base64encoded = Base64.getDecoder().decode(image);
 
         outputStream.write(base64encoded);
+        outputStream.close();
         return fileName;
     }
 
@@ -54,5 +58,21 @@ public class FileService {
     public String detectType(String image) {
         byte[] base64encoded = Base64.getDecoder().decode(image);
         return tika.detect(base64encoded);
+    }
+
+    public FileAttachment saveHoaxAttachment(MultipartFile multipartFile) {
+        String fileName = generateRandomName();
+        File target = new File(appConfiguration.getUploadPath() + "/" + fileName);
+        try {
+            OutputStream outputStream = new FileOutputStream(target);
+            outputStream.write(multipartFile.getBytes());
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        FileAttachment attachment = new FileAttachment();
+        attachment.setName(fileName);
+        return fileAttachmentRepository.save(attachment);
     }
 }
