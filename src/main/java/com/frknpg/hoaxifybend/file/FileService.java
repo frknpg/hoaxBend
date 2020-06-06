@@ -2,6 +2,8 @@ package com.frknpg.hoaxifybend.file;
 
 import com.frknpg.hoaxifybend.configuration.AppConfiguration;
 import org.apache.tika.Tika;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,9 +14,12 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Service
+@EnableScheduling
 public class FileService {
 
     AppConfiguration appConfiguration;
@@ -74,5 +79,16 @@ public class FileService {
         FileAttachment attachment = new FileAttachment();
         attachment.setName(fileName);
         return fileAttachmentRepository.save(attachment);
+    }
+
+    @Scheduled(fixedRate = 24 * 60 * 60 * 1000)
+    public void cleanUpStorage() {
+        Date twentyFourHourAgo = new Date(System.currentTimeMillis() - (24 * 60 * 60 * 1000));
+        List<FileAttachment> filesToBeDeleted = fileAttachmentRepository.findByDateBeforeAndHoaxIsNull(twentyFourHourAgo);
+
+        for (FileAttachment file : filesToBeDeleted) {
+            deleteImage(file.getName());
+            fileAttachmentRepository.deleteById(file.getId());
+        }
     }
 }
