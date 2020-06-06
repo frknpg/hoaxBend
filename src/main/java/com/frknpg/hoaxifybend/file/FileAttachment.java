@@ -17,6 +17,8 @@ public class FileAttachment {
 
     private String name;
 
+    private String fileType;
+
     @CreationTimestamp
     private Date date;
 

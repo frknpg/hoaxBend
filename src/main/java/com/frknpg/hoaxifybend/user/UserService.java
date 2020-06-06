@@ -61,7 +61,7 @@ public class UserService implements IUserService {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            fileService.deleteImage(oldImageName);
+            fileService.deleteProfileImage(oldImageName);
         }
         return userRepository.save(inDb);
     }

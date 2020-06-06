@@ -35,7 +35,7 @@ public class FileService {
 
     public String writeBase64EncodedStringToFile(String image) throws IOException {
         String fileName = generateRandomName();
-        File target = new File(appConfiguration.getUploadPath() + "/" + fileName);
+        File target = new File(appConfiguration.getProfileStorage() + "/" + fileName);
         OutputStream outputStream = new FileOutputStream(target);
 
         byte[] base64encoded = Base64.getDecoder().decode(image);
@@ -49,12 +49,23 @@ public class FileService {
         return UUID.randomUUID().toString().replaceAll("-", "");
     }
 
-    public void deleteImage(String oldImageName) {
+    public void deleteProfileImage(String oldImageName) {
         if (oldImageName == null) {
             return;
         }
+        deleteFile(oldImageName, appConfiguration.getProfileStoragePath());
+    }
+
+    public void deleteAttachmentImage(String oldImageName) {
+        if (oldImageName == null) {
+            return;
+        }
+        deleteFile(oldImageName, appConfiguration.getAttachmentStoragePath());
+    }
+
+    public void deleteFile(String oldImageName, String path) {
         try {
-            Files.delete(Paths.get(appConfiguration.getUploadPath(), oldImageName));
+            Files.delete(Paths.get(path, oldImageName));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -67,17 +78,20 @@ public class FileService {
 
     public FileAttachment saveHoaxAttachment(MultipartFile multipartFile) {
         String fileName = generateRandomName();
-        File target = new File(appConfiguration.getUploadPath() + "/" + fileName);
+        File target = new File(appConfiguration.getAttachmentStoragePath() + "/" + fileName);
+        String fileType = null;
         try {
             OutputStream outputStream = new FileOutputStream(target);
             outputStream.write(multipartFile.getBytes());
             outputStream.close();
+            fileType = tika.detect(multipartFile.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         FileAttachment attachment = new FileAttachment();
         attachment.setName(fileName);
+        attachment.setFileType(fileType);
         return fileAttachmentRepository.save(attachment);
     }
 
@@ -87,7 +101,7 @@ public class FileService {
         List<FileAttachment> filesToBeDeleted = fileAttachmentRepository.findByDateBeforeAndHoaxIsNull(twentyFourHourAgo);
 
         for (FileAttachment file : filesToBeDeleted) {
-            deleteImage(file.getName());
+            deleteAttachmentImage(file.getName());
             fileAttachmentRepository.deleteById(file.getId());
         }
     }
