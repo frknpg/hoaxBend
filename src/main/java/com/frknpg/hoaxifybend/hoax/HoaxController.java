@@ -1,5 +1,6 @@
 package com.frknpg.hoaxifybend.hoax;
 
+import com.frknpg.hoaxifybend.hoax.vm.HoaxSubmitVM;
 import com.frknpg.hoaxifybend.hoax.vm.HoaxVM;
 import com.frknpg.hoaxifybend.shared.CurrentUser;
 import com.frknpg.hoaxifybend.shared.GenericResponse;
@@ -26,7 +27,7 @@ public class HoaxController {
     IHoaxService hoaxService;
 
     @PostMapping("/hoaxes")
-    public GenericResponse saveHoax(@Valid @RequestBody Hoax hoax, @CurrentUser User user) {
+    public GenericResponse saveHoax(@Valid @RequestBody HoaxSubmitVM hoax, @CurrentUser User user) {
         hoaxService.saveHoax(hoax, user);
         return new GenericResponse("Hoax is saved!");
     }

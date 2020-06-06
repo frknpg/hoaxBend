@@ -1,5 +1,8 @@
 package com.frknpg.hoaxifybend.hoax;
 
+import com.frknpg.hoaxifybend.file.FileAttachment;
+import com.frknpg.hoaxifybend.file.FileAttachmentRepository;
+import com.frknpg.hoaxifybend.hoax.vm.HoaxSubmitVM;
 import com.frknpg.hoaxifybend.user.User;
 import com.frknpg.hoaxifybend.user.UserService;
 import org.springframework.data.domain.Page;
@@ -9,22 +12,35 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class HoaxService implements IHoaxService {
 
     HoaxRepository hoaxRepository;
     UserService userService;
+    FileAttachmentRepository fileAttachmentRepository;
 
-    public HoaxService(HoaxRepository hoaxRepository, UserService userService) {
+    public HoaxService(HoaxRepository hoaxRepository, UserService userService,
+                       FileAttachmentRepository fileAttachmentRepository) {
         this.hoaxRepository = hoaxRepository;
         this.userService = userService;
+        this.fileAttachmentRepository = fileAttachmentRepository;
     }
 
     @Override
-    public void saveHoax(Hoax hoax, User user) {
+    public void saveHoax(HoaxSubmitVM hoaxSubmitVM, User user) {
+        Hoax hoax = new Hoax();
+        hoax.setContent(hoaxSubmitVM.getContent());
         hoax.setUser(user);
         hoaxRepository.save(hoax);
+
+        Optional<FileAttachment> optionalFileAttachment = fileAttachmentRepository.findById(hoaxSubmitVM.getAttachmentId());
+        if (optionalFileAttachment.isPresent()) {
+            FileAttachment fileAttachment = optionalFileAttachment.get();
+            fileAttachment.setHoax(hoax);
+            fileAttachmentRepository.save(fileAttachment);
+        }
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.frknpg.hoaxifybend;
 
-import com.frknpg.hoaxifybend.hoax.Hoax;
 import com.frknpg.hoaxifybend.hoax.IHoaxService;
+import com.frknpg.hoaxifybend.hoax.vm.HoaxSubmitVM;
 import com.frknpg.hoaxifybend.user.IUserService;
 import com.frknpg.hoaxifybend.user.User;
 import org.springframework.boot.CommandLineRunner;
@@ -29,7 +29,7 @@ public class HoaxifybendApplication {
 				user.setPassword("P4ssword");
 				userService.save(user);
 				for (int j = 1; j <= 15; j++) {
-					Hoax hoax = new Hoax();
+					HoaxSubmitVM hoax = new HoaxSubmitVM();
 					hoax.setContent("Hoax - " + j + " from user " + i);
 					hoaxService.saveHoax(hoax, user);
 				}
