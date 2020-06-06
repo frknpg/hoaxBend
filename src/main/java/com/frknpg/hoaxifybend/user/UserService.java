@@ -18,8 +18,7 @@ public class UserService implements IUserService {
     PasswordEncoder passwordEncoder;
     FileService fileService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, FileService fileService) {
-
+    public UserService(UserRepository userRepository, FileService fileService) {
         this.userRepository = userRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
         this.fileService = fileService;
@@ -64,6 +63,13 @@ public class UserService implements IUserService {
             fileService.deleteProfileImage(oldImageName);
         }
         return userRepository.save(inDb);
+    }
+
+    @Override
+    public void delete(String username) {
+        User inDb = getByUsername(username);
+        fileService.deleteAllFilesForUser(inDb);
+        userRepository.delete(inDb);
     }
 
 }

@@ -48,6 +48,13 @@ public class UserController {
         return new UserVM(user);
     }
 
+    @DeleteMapping("/users/{username}")
+    @PreAuthorize("#username == principal.username")
+    GenericResponse deleteUser(@PathVariable String username) {
+        userService.delete(username);
+        return new GenericResponse("User deleted.");
+    }
+
     //ERROR HANDLER KULLANDIIGMIZ ICIN GEREK KALMADI
 //    @ExceptionHandler(MethodArgumentNotValidException.class)
 //    @ResponseStatus(HttpStatus.BAD_REQUEST)

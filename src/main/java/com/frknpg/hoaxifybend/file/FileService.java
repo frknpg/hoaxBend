@@ -1,6 +1,7 @@
 package com.frknpg.hoaxifybend.file;
 
 import com.frknpg.hoaxifybend.configuration.AppConfiguration;
+import com.frknpg.hoaxifybend.user.User;
 import org.apache.tika.Tika;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -35,7 +36,7 @@ public class FileService {
 
     public String writeBase64EncodedStringToFile(String image) throws IOException {
         String fileName = generateRandomName();
-        File target = new File(appConfiguration.getProfileStorage() + "/" + fileName);
+        File target = new File(appConfiguration.getProfileStoragePath() + "/" + fileName);
         OutputStream outputStream = new FileOutputStream(target);
 
         byte[] base64encoded = Base64.getDecoder().decode(image);
@@ -103,6 +104,14 @@ public class FileService {
         for (FileAttachment file : filesToBeDeleted) {
             deleteAttachmentImage(file.getName());
             fileAttachmentRepository.deleteById(file.getId());
+        }
+    }
+
+    public void deleteAllFilesForUser(User inDb) {
+        deleteProfileImage(inDb.getImage());
+        List<FileAttachment> filesToBeRemoved = fileAttachmentRepository.findByHoaxUser(inDb);
+        for (FileAttachment file : filesToBeRemoved) {
+            deleteAttachmentImage(file.getName());
         }
     }
 }

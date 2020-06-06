@@ -4,8 +4,8 @@ import com.frknpg.hoaxifybend.file.FileAttachment;
 import com.frknpg.hoaxifybend.file.FileAttachmentRepository;
 import com.frknpg.hoaxifybend.file.FileService;
 import com.frknpg.hoaxifybend.hoax.vm.HoaxSubmitVM;
+import com.frknpg.hoaxifybend.user.IUserService;
 import com.frknpg.hoaxifybend.user.User;
-import com.frknpg.hoaxifybend.user.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -19,11 +19,11 @@ import java.util.Optional;
 public class HoaxService implements IHoaxService {
 
     HoaxRepository hoaxRepository;
-    UserService userService;
+    IUserService userService;
     FileAttachmentRepository fileAttachmentRepository;
     FileService fileService;
 
-    public HoaxService(HoaxRepository hoaxRepository, UserService userService,
+    public HoaxService(HoaxRepository hoaxRepository, IUserService userService,
                        FileAttachmentRepository fileAttachmentRepository,
                        FileService fileService) {
         this.hoaxRepository = hoaxRepository;
